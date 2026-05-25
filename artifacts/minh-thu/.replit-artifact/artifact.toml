@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Minh Thư - Trang cá nhân"
+version = "1.0.0"
+id = "artifacts/minh-thu"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23771
+
+[services.development]
+run = "pnpm --filter @workspace/minh-thu run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/minh-thu", "run", "build" ]
+publicDir = "artifacts/minh-thu/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23771"
+BASE_PATH = "/"
