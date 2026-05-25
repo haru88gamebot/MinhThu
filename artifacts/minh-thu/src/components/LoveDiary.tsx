@@ -1,0 +1,323 @@
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Trash2, BookHeart, X, ChevronDown, ChevronUp, Smile } from "lucide-react";
+
+interface DiaryEntry {
+  id: string;
+  date: string;
+  title: string;
+  content: string;
+  emoji: string;
+  mood: string;
+}
+
+const STORAGE_KEY = "love_diary_entries";
+const MOODS = [
+  { emoji: "🥰", label: "Hạnh phúc" },
+  { emoji: "💕", label: "Yêu lắm" },
+  { emoji: "😊", label: "Vui vẻ" },
+  { emoji: "🥺", label: "Nhớ anh" },
+  { emoji: "😍", label: "Thích lắm" },
+  { emoji: "😢", label: "Buồn chút" },
+  { emoji: "🤗", label: "Ôm ấm" },
+  { emoji: "✨", label: "Đặc biệt" },
+];
+
+const DEFAULT_ENTRIES: DiaryEntry[] = [
+  {
+    id: "default-1",
+    date: "2026-03-26",
+    title: "Ngày đầu tiên 🌸",
+    content: "Hôm nay là ngày đầu tiên chính thức bên nhau. Anh Vũ đã tỏ tình — Thư ngạc nhiên đến mức hỏi lại hai lần mà vẫn không tin. Nhưng đó là sự thật. Thư vui lắm! 💕",
+    emoji: "🌸",
+    mood: "Hạnh phúc",
+  },
+];
+
+export function LoveDiary() {
+  const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const [showForm, setShowForm] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    date: new Date().toISOString().split("T")[0],
+    title: "",
+    content: "",
+    emoji: "🥰",
+    mood: "Hạnh phúc",
+  });
+  const [showMoodPicker, setShowMoodPicker] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        setEntries(JSON.parse(raw));
+      } else {
+        setEntries(DEFAULT_ENTRIES);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_ENTRIES));
+      }
+    } catch {
+      setEntries(DEFAULT_ENTRIES);
+    }
+  }, []);
+
+  const save = (next: DiaryEntry[]) => {
+    setEntries(next);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  };
+
+  const addEntry = () => {
+    if (!form.title.trim() || !form.content.trim()) return;
+    const entry: DiaryEntry = {
+      id: Date.now().toString(),
+      date: form.date,
+      title: form.title.trim(),
+      content: form.content.trim(),
+      emoji: form.emoji,
+      mood: form.mood,
+    };
+    const next = [entry, ...entries].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    save(next);
+    setForm({ date: new Date().toISOString().split("T")[0], title: "", content: "", emoji: "🥰", mood: "Hạnh phúc" });
+    setShowForm(false);
+    setExpanded(entry.id);
+  };
+
+  const deleteEntry = (id: string) => {
+    save(entries.filter((e) => e.id !== id));
+    setDeleteConfirm(null);
+    if (expanded === id) setExpanded(null);
+  };
+
+  const formatDate = (d: string) => {
+    const dt = new Date(d + "T00:00:00");
+    return dt.toLocaleDateString("vi-VN", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  };
+
+  return (
+    <div className="mt-12">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <BookHeart className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-serif font-bold text-xl text-foreground">Nhật Ký Tình Yêu</h3>
+            <p className="text-xs text-muted-foreground">{entries.length} trang ký ức</p>
+          </div>
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { setShowForm(s => !s); setShowMoodPicker(false); }}
+          className="flex items-center gap-2 bg-primary text-white px-4 py-2.5 rounded-2xl text-sm font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30 transition-shadow"
+        >
+          <Plus className="w-4 h-4" />
+          Thêm kỷ niệm
+        </motion.button>
+      </div>
+
+      {/* Add Form */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25 }}
+            className="mb-6 glass-card rounded-3xl p-6 border border-primary/20"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h4 className="font-serif font-bold text-lg text-primary">Ghi lại kỷ niệm mới 💌</h4>
+              <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Ngày</label>
+                <input
+                  type="date"
+                  value={form.date}
+                  onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
+                  className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Cảm xúc</label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowMoodPicker(s => !s)}
+                    className="w-full bg-background border border-border rounded-xl px-3 py-2.5 text-sm flex items-center gap-2 hover:border-primary/50 transition-colors"
+                  >
+                    <span className="text-lg">{form.emoji}</span>
+                    <span className="flex-1 text-left text-foreground">{form.mood}</span>
+                    <Smile className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                  <AnimatePresence>
+                    {showMoodPicker && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="absolute top-full left-0 right-0 z-20 mt-1 bg-background border border-border rounded-2xl shadow-xl overflow-hidden"
+                      >
+                        <div className="grid grid-cols-4 p-2 gap-1">
+                          {MOODS.map(m => (
+                            <button
+                              key={m.emoji}
+                              onClick={() => { setForm(f => ({ ...f, emoji: m.emoji, mood: m.label })); setShowMoodPicker(false); }}
+                              className={`flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-primary/10 transition-colors ${form.emoji === m.emoji ? "bg-primary/10" : ""}`}
+                            >
+                              <span className="text-xl">{m.emoji}</span>
+                              <span className="text-[10px] text-muted-foreground leading-tight text-center">{m.label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Tiêu đề</label>
+              <input
+                type="text"
+                placeholder="Kỷ niệm đáng nhớ..."
+                value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground/50"
+              />
+            </div>
+
+            <div className="mb-5">
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Nội dung</label>
+              <textarea
+                rows={4}
+                placeholder="Kể về kỷ niệm này... mọi chi tiết dù nhỏ cũng đáng nhớ 🩷"
+                value={form.content}
+                onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 resize-none placeholder:text-muted-foreground/50 leading-relaxed"
+              />
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowForm(false)}
+                className="flex-1 py-3 rounded-2xl border border-border text-muted-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+              >
+                Huỷ
+              </button>
+              <button
+                onClick={addEntry}
+                disabled={!form.title.trim() || !form.content.trim()}
+                className="flex-1 py-3 rounded-2xl bg-primary text-white text-sm font-bold shadow-md shadow-primary/20 hover:shadow-primary/30 transition-shadow disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Lưu kỷ niệm 💕
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Timeline */}
+      {entries.length === 0 ? (
+        <div className="text-center py-12 text-muted-foreground">
+          <div className="text-5xl mb-3">📖</div>
+          <p className="text-sm">Chưa có kỷ niệm nào. Thêm kỷ niệm đầu tiên nào! 🌸</p>
+        </div>
+      ) : (
+        <div className="relative">
+          <div className="absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-primary/40 via-primary/20 to-transparent" />
+          <div className="space-y-4">
+            {entries.map((entry, i) => (
+              <motion.div
+                key={entry.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06 }}
+                className="relative pl-14"
+              >
+                {/* Timeline dot */}
+                <div className="absolute left-3 top-5 w-5 h-5 rounded-full bg-primary/15 border-2 border-primary flex items-center justify-center shadow-sm">
+                  <span className="text-[10px] leading-none">{entry.emoji}</span>
+                </div>
+
+                <div className="glass-card rounded-2xl overflow-hidden border border-border/40 hover:border-primary/30 transition-colors">
+                  <button
+                    onClick={() => setExpanded(expanded === entry.id ? null : entry.id)}
+                    className="w-full text-left px-5 py-4 flex items-start gap-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium shrink-0">
+                          {entry.mood}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground truncate">{formatDate(entry.date)}</span>
+                      </div>
+                      <h4 className="font-serif font-bold text-foreground leading-snug">{entry.title}</h4>
+                    </div>
+                    <div className="shrink-0 mt-1 text-muted-foreground">
+                      {expanded === entry.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    </div>
+                  </button>
+
+                  <AnimatePresence>
+                    {expanded === entry.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-5 pb-5 border-t border-border/30">
+                          <p className="text-muted-foreground leading-relaxed text-sm mt-4 whitespace-pre-wrap">{entry.content}</p>
+                          <div className="flex justify-end mt-4">
+                            {deleteConfirm === entry.id ? (
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-muted-foreground">Xoá kỷ niệm này?</span>
+                                <button
+                                  onClick={() => setDeleteConfirm(null)}
+                                  className="text-xs text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-lg hover:bg-muted/50 transition-colors"
+                                >
+                                  Không
+                                </button>
+                                <button
+                                  onClick={() => deleteEntry(entry.id)}
+                                  className="text-xs text-red-500 hover:text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors font-medium"
+                                >
+                                  Xoá
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setDeleteConfirm(entry.id)}
+                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-50/50"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Xoá
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

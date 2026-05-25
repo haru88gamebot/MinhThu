@@ -14,6 +14,7 @@ import { HamburgerMenu } from "@/components/HamburgerMenu";
 import { DonationModal } from "@/components/DonationModal";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { MilestoneBanner } from "@/components/MilestoneBanner";
+import { LoveDiary } from "@/components/LoveDiary";
 
 const EXAM_DATE = new Date("2026-05-31T07:30:00");
 const LOVE_START = new Date("2026-03-26T00:00:00");
@@ -665,6 +666,8 @@ function Home() {
                       </p>
                       <p className="text-primary font-bold text-lg">Mãi bên nhau nhé, anh Vũ ❤️</p>
                     </motion.div>
+
+                    <LoveDiary />
 
                     <div className="text-center mt-8">
                       <button
