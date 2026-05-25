@@ -15,6 +15,12 @@ import { DonationModal } from "@/components/DonationModal";
 import { MusicPlayer } from "@/components/MusicPlayer";
 
 const EXAM_DATE = new Date("2026-05-31T07:30:00");
+const LOVE_START = new Date("2026-03-26T00:00:00");
+
+const getDaysInLove = () => {
+  const diff = +new Date() - +LOVE_START;
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
+};
 
 const calculateTimeLeft = () => {
   const difference = +EXAM_DATE - +new Date();
@@ -465,7 +471,30 @@ function Home() {
             <div className="inline-block p-4 rounded-full bg-rose-100/50 backdrop-blur-md mb-8 shadow-inner border border-rose-200/50">
               <HeartPulse className="w-16 h-16 text-rose-500 animate-heartbeat drop-shadow-md" />
             </div>
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-10 text-foreground">Góc nhỏ bí mật</h2>
+            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6 text-foreground">Góc nhỏ bí mật</h2>
+
+            {/* Days in love counter */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, type: "spring", bounce: 0.4 }}
+              className="inline-flex flex-col items-center gap-2 mb-10"
+            >
+              <div className="flex items-center gap-4 bg-gradient-to-r from-rose-400/20 via-primary/20 to-rose-400/20 backdrop-blur-md border border-rose-300/40 rounded-3xl px-8 py-5 shadow-xl">
+                <div className="flex flex-col items-center">
+                  <Heart className="w-6 h-6 text-rose-500 animate-heartbeat mb-1" fill="currentColor" />
+                  <span className="text-4xl md:text-5xl font-bold font-serif text-primary tabular-nums">{getDaysInLove()}</span>
+                  <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mt-1">ngày</span>
+                </div>
+                <div className="w-px h-14 bg-rose-200/60" />
+                <div className="text-left">
+                  <p className="font-serif font-bold text-lg text-foreground leading-tight">Thư & Vũ</p>
+                  <p className="text-sm text-muted-foreground">từ 26/03/2026</p>
+                  <p className="text-xs text-rose-400 font-medium mt-0.5">yêu nhau đến hôm nay 🩷</p>
+                </div>
+              </div>
+            </motion.div>
 
             <div className="glass-card p-8 md:p-14 rounded-[3rem] shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-br from-rose-100/20 via-transparent to-rose-200/20 animate-shimmer mix-blend-overlay"></div>
