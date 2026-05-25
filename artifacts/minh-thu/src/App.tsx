@@ -14,8 +14,10 @@ import { HamburgerMenu } from "@/components/HamburgerMenu";
 import { DonationModal } from "@/components/DonationModal";
 import { MusicPlayer } from "@/components/MusicPlayer";
 
+const EXAM_DATE = new Date("2026-05-31T07:30:00");
+
 const calculateTimeLeft = () => {
-  const difference = +new Date("2026-05-30T00:00:00") - +new Date();
+  const difference = +EXAM_DATE - +new Date();
   if (difference > 0) {
     return {
       ngày: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -25,6 +27,11 @@ const calculateTimeLeft = () => {
     };
   }
   return {} as Record<string, number>;
+};
+
+const isLastDay = () => {
+  const difference = +EXAM_DATE - +new Date();
+  return difference > 0 && difference <= 1000 * 60 * 60 * 24;
 };
 
 const hobbies = [
@@ -666,29 +673,54 @@ function Home() {
             </motion.div>
             <h2 className="text-4xl md:text-6xl font-serif font-bold mb-4 drop-shadow-md">Kỳ thi vào Cấp 3</h2>
             
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full mb-10 mt-2 shadow-inner border border-white/30">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full mb-4 mt-2 shadow-inner border border-white/30">
               <Target className="w-5 h-5 text-yellow-300" />
               <span className="font-semibold text-base md:text-lg tracking-wide">Mục tiêu: Trường THPT Đường An</span>
             </div>
-            
-            <p className="text-xl md:text-2xl font-light opacity-90 mb-16 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-              Thời gian đếm ngược đến dấu mốc quan trọng nhất! Cố lên Minh Thư! 💪
-            </p>
 
-            <div className="flex flex-wrap justify-center gap-6 md:gap-12">
-              {Object.keys(timeLeft).length > 0 ? (
-                <>
+            <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-5 py-2 rounded-full mb-10 shadow-inner border border-white/20">
+              <span className="text-yellow-200 text-sm font-semibold">📅 Chủ nhật — 31/05/2026 lúc 7:30 sáng</span>
+            </div>
+            
+            {Object.keys(timeLeft).length > 0 ? (
+              <>
+                <p className="text-xl md:text-2xl font-light opacity-90 mb-16 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                  {isLastDay()
+                    ? "🌟 Ngày mai là ngày thi rồi! Ngủ sớm, ăn no, và thi thật tốt nhé Minh Thư! 💪"
+                    : "Thời gian đếm ngược đến dấu mốc quan trọng nhất! Cố lên Minh Thư! 💪"}
+                </p>
+                <div className="flex flex-wrap justify-center gap-6 md:gap-12">
                   <AnimatedCounter value={timeLeft.ngày} label="Ngày" max={365} />
                   <AnimatedCounter value={timeLeft.giờ} label="Giờ" max={24} />
                   <AnimatedCounter value={timeLeft.phút} label="Phút" max={60} />
                   <AnimatedCounter value={timeLeft.giây} label="Giây" max={60} />
-                </>
-              ) : (
-                <div className="text-4xl font-bold bg-white/20 p-8 rounded-3xl backdrop-blur-md border border-white/30">
-                  🎉 Kỳ thi đã bắt đầu! Chúc Thư thi thật tốt! 🌟
                 </div>
-              )}
-            </div>
+                {isLastDay() && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-10 bg-white/20 backdrop-blur-md rounded-3xl p-6 border border-white/30 max-w-lg mx-auto"
+                  >
+                    <p className="text-2xl font-bold mb-2">🎯 Ngày mai thi rồi!</p>
+                    <p className="text-white/90 font-medium">Hãy nghỉ ngơi thật tốt tối nay. Thư đã chuẩn bị đủ rồi — cứ tự tin mà đi thi nhé! Cả nhà ủng hộ Thư 🩷</p>
+                  </motion.div>
+                )}
+              </>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", bounce: 0.4 }}
+                className="space-y-6"
+              >
+                <div className="text-6xl mb-4">🎉</div>
+                <div className="text-3xl md:text-4xl font-bold bg-white/20 p-8 rounded-3xl backdrop-blur-md border border-white/30">
+                  Hôm nay là ngày thi! Chúc Minh Thư thi thật tốt! 🌟
+                </div>
+                <p className="text-xl opacity-90 font-serif italic">Tự tin lên, Thư Sói đã sẵn sàng rồi! 💪🐺</p>
+              </motion.div>
+            )}
 
             <p className="mt-20 text-2xl italic opacity-90 font-serif drop-shadow-md">
               "Thành công không đến từ may mắn,<br className="md:hidden"/> nó đến từ sự nỗ lực không ngừng nghỉ."
