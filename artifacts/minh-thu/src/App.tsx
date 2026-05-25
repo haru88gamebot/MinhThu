@@ -13,6 +13,7 @@ import { FloatingParticles } from "@/components/FloatingParticles";
 import { HamburgerMenu } from "@/components/HamburgerMenu";
 import { DonationModal } from "@/components/DonationModal";
 import { MusicPlayer } from "@/components/MusicPlayer";
+import { MilestoneBanner } from "@/components/MilestoneBanner";
 
 const EXAM_DATE = new Date("2026-05-31T07:30:00");
 const LOVE_START = new Date("2026-03-26T00:00:00");
@@ -780,6 +781,7 @@ function Home() {
 
       <DonationModal open={donationOpen} onClose={() => setDonationOpen(false)} />
       <MusicPlayer />
+      <MilestoneBanner />
       <Toaster />
     </div>
   );
