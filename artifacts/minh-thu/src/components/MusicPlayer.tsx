@@ -16,12 +16,21 @@ export function MusicPlayer() {
   const [trackIdx, setTrackIdx] = useState(0);
   const [showPanel, setShowPanel] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const autoPlayRef = useRef(false);
 
   useEffect(() => {
     const audio = new Audio(TRACKS[trackIdx].url);
-    audio.loop = true;
     audio.volume = 0.35;
+    audio.addEventListener("ended", () => {
+      autoPlayRef.current = true;
+      setTrackIdx(prev => (prev + 1) % TRACKS.length);
+    });
     audioRef.current = audio;
+    if (autoPlayRef.current) {
+      autoPlayRef.current = false;
+      audio.play().catch(() => {});
+      setPlaying(true);
+    }
     return () => { audio.pause(); audio.src = ""; };
   }, [trackIdx]);
 
