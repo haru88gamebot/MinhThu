@@ -4,6 +4,10 @@ import { Music, VolumeX, Volume2 } from "lucide-react";
 
 const TRACKS = [
   {
+    title: "Nỗ Lực Học Tập 📚",
+    url: "/music/no-luc-hoc-tap.mp3",
+  },
+  {
     title: "Lofi Chill ☁️",
     url: "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3",
   },
