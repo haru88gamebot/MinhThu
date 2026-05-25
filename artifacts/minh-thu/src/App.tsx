@@ -16,6 +16,7 @@ import { MusicPlayer } from "@/components/MusicPlayer";
 import { MilestoneBanner } from "@/components/MilestoneBanner";
 import { LoveDiary } from "@/components/LoveDiary";
 import { LyDoYeu } from "@/components/LyDoYeu";
+import { PuzzleGame } from "@/components/PuzzleGame";
 
 const EXAM_DATE = new Date("2026-05-31T07:30:00");
 const LOVE_START = new Date("2026-03-26T00:00:00");
@@ -446,6 +447,7 @@ function Home() {
       </section>
 
       <LyDoYeu />
+      <PuzzleGame />
 
       {/* Relationship Section */}
       <section id="relationship" className="py-32 relative overflow-hidden z-10">
