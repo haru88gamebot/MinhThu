@@ -15,6 +15,7 @@ import { DonationModal } from "@/components/DonationModal";
 import { MusicPlayer } from "@/components/MusicPlayer";
 import { MilestoneBanner } from "@/components/MilestoneBanner";
 import { LoveDiary } from "@/components/LoveDiary";
+import { LyDoYeu } from "@/components/LyDoYeu";
 
 const EXAM_DATE = new Date("2026-05-31T07:30:00");
 const LOVE_START = new Date("2026-03-26T00:00:00");
@@ -163,13 +164,13 @@ function Home() {
           Minh Thư <BadgeCheck className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" fill="currentColor" stroke="white" />
         </a>
         <div className="hidden md:flex gap-8 font-medium text-sm">
-          {["about", "hobbies", "relationship", "exam"].map((id) => (
+          {["about", "hobbies", "lydoyeu", "relationship", "exam"].map((id) => (
             <a 
               key={id} 
               href={`#${id}`} 
               className={`transition-all duration-300 relative ${activeSection === id ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"}`}
             >
-              {{about: "Giới thiệu", hobbies: "Sở thích", relationship: "Tình cảm", exam: "Mục tiêu"}[id]}
+              {{about: "Giới thiệu", hobbies: "Sở thích", lydoyeu: "Yêu vì sao", relationship: "Tình cảm", exam: "Mục tiêu"}[id]}
               {activeSection === id && (
                 <motion.div layoutId="nav-indicator" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
               )}
@@ -443,6 +444,8 @@ function Home() {
           </div>
         </div>
       </section>
+
+      <LyDoYeu />
 
       {/* Relationship Section */}
       <section id="relationship" className="py-32 relative overflow-hidden z-10">
