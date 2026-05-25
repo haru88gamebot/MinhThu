@@ -1,0 +1,39 @@
+server {
+    listen       ${PORT};
+    server_name  _;
+    root         /usr/share/nginx/html;
+    index        index.html;
+
+    # ── Gzip compression ──────────────────────────────────────────
+    gzip            on;
+    gzip_vary       on;
+    gzip_proxied    any;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/javascript
+        application/javascript
+        application/json
+        image/svg+xml
+        font/woff2;
+
+    # ── Cache dài hạn cho file có hash (JS, CSS, fonts, ảnh) ──────
+    location ~* \.(js|css|woff2?|png|jpe?g|gif|svg|ico|webp)$ {
+        expires            1y;
+        add_header         Cache-Control "public, immutable";
+        try_files          $uri =404;
+    }
+
+    # ── Nhạc MP3 — cache vừa phải ────────────────────────────────
+    location ~* \.mp3$ {
+        expires            7d;
+        add_header         Cache-Control "public";
+        try_files          $uri =404;
+    }
+
+    # ── SPA fallback — mọi route → index.html ────────────────────
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

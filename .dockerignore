@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (sẽ install lại trong Docker)
+**/node_modules
+
+# Build output cũ
+**/dist
+**/.turbo
+
+# Replit-specific
+.replit
+.replitignore
+.agents
+.local
+.cache
+
+# Ảnh đính kèm lớn (không cần cho build)
+attached_assets
+
+# Log files
+**/*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor
+.vscode
+.idea
+**/.DS_Store
